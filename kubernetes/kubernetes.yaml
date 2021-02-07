@@ -1,0 +1,100 @@
+---
+- name: Enable br_netfilter
+  modprobe:
+    name: br_netfilter
+    state: present
+
+- name: Allow iptables to see bridged traffic
+  # add br_netfilter to list of modules to load on boot https://www.freedesktop.org/software/systemd/man/modules-load.d.html
+  # https://man7.org/linux/man-pages/man5/sysctl.d.5.html
+  sysctl:
+    name: "{{ item }}"
+    value: '1'
+    state: present
+  loop:
+    - net.bridge.bridge-nf-call-iptables
+    - net.bridge.bridge-nf-call-ip6tables
+
+- name: Update apt package index for installing deps
+  apt:
+    update_cache: yes
+
+- name: Install deps
+  apt:
+    name:
+    - apt-transport-https
+    - curl
+
+- name: Add google cloud GPG key
+  apt_key:
+    url: "https://packages.cloud.google.com/apt/doc/apt-key.gpg"
+    id: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
+    state: present
+
+- name: Add kubernetes repository
+  apt_repository:
+    repo: "deb https://apt.kubernetes.io/ kubernetes-xenial main"
+    state: present
+    update_cache: yes
+
+- name: Update apt package index
+  apt:
+    update_cache: yes
+
+- name: Install kubernetes packages
+  apt:
+    name:
+    - kubelet
+    - kubeadm
+    - kubectl
+    allow_unauthenticated: yes
+  notify: 
+  - Restart kubelet
+
+- name: Ensure kubelet is started and enabled at boot
+  service:
+    name: kubelet
+    state: started
+    enabled: true
+
+- name: Check if cluster has already been initialized
+  stat:
+    path: /etc/kubernetes/admin.conf
+  register: kubernetes_init_stat
+
+- name: Check if server is provisioned using vagrant
+  stat:
+    path: /home/vagrant
+  register: vagrant_prov_stat
+
+# Explanation for this here https://jaanhio.medium.com/how-to-fix-k8s-clusters-network-issue-due-to-nodes-having-similar-internal-ip-address-537b48d47d3
+- name: Add KUBELET_EXTRA_ARGS
+  copy:
+    dest: "/etc/default/kubelet"
+    content: |
+      KUBELET_EXTRA_ARGS="--node-ip={{ inventory_hostname }}"
+  when: vagrant_prov_stat.stat.exists
+
+- name: Setup master node
+  include_tasks: ./setup-master.yaml
+  when: kubernetes_role == 'master'
+
+- name: Register kubeadm join command
+  command: kubeadm token create --print-join-command
+  changed_when: false
+  when: kubernetes_role == 'master'
+  register: kubeadm_join_command_result
+
+- name: Set kubeadm join command fact
+  set_fact:
+    kubeadm_join_command: "{{ kubeadm_join_command_result.stdout | trim }}"
+  delegate_to: "{{ item }}"
+  delegate_facts: true
+  with_items: "{{ groups['all'] }}"
+  when: 
+  - kubernetes_role == 'master'
+  - kubeadm_join_command_result.stdout is defined
+
+- name: Setup worker node
+  include_tasks: ./setup-worker.yaml
+  when: kubernetes_role == 'worker'

@@ -1,0 +1,21 @@
+---
+- hosts: pik8s
+  become: true
+  vars_files:
+    - ./vars/user_vars.yaml
+  
+  tasks:
+  - name: Install extra packages
+    include_tasks: extra-packages.yaml
+    when: extra_packages | default([]) | length > 0
+
+  - name: Install docker
+    include_tasks: docker.yaml
+
+  - name: Install kubernetes
+    include_tasks: ./kubernetes/kubernetes.yaml
+
+  handlers:
+  - name: Restart kubelet
+    debug:
+      msg: 'Restarting kubelet'

@@ -1,0 +1,22 @@
+---
+- name: Print details
+  debug:
+    msg: "i am worker node"
+
+- name: Print kubeadm join command
+  debug:
+    msg: "{{ kubeadm_join_command }}"
+
+- name: Check if node has already joined cluster
+  stat:
+    path: /etc/kubernetes/kubelet.conf
+  register: worker_cluster_join_status
+
+- name: Print worker_cluster_join_status
+  debug:
+    msg: "{{ worker_cluster_join_status.stat.exists }}"
+
+- name: Add worker node to cluster
+  shell: "{{ kubeadm_join_command }}"
+  when: not worker_cluster_join_status.stat.exists
+

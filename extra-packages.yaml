@@ -1,0 +1,11 @@
+---
+- name: Update apt cache
+  apt:
+    update_cache: yes
+    update_cache_retry_max_delay: 12
+
+- name: Install extra packages
+  apt:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ extra_packages }}"

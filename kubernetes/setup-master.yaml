@@ -1,0 +1,67 @@
+---
+- name: Init master node with kubeadm init
+  command: >
+    kubeadm init
+    --pod-network-cidr={{ pod_network_cidr | default('10.244.0.0/16', true) }}
+    --apiserver-advertise-address={{ inventory_hostname }}
+    --ignore-preflight-errors='all'
+  register: kubeadm_init
+  when: not kubernetes_init_stat.stat.exists
+
+- name: Print kubeadm init results
+  debug:
+    var: kubeadm_init.stdout
+    verbosity: 2
+  when: not kubernetes_init_stat.stat.exists
+
+- name: Print if cluster does not exist
+  debug:
+    msg: "no cluster"
+  when: not kubernetes_init_stat.stat.exists
+
+- name: Print if cluster exists
+  debug:
+    msg: "cluster created"
+  when: kubernetes_init_stat.stat.exists
+
+- name: Create .kube directory for root user
+  file:
+    path: ~/.kube
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+
+- name: Create symlink to admin.conf for root user
+  file:
+    src: /etc/kubernetes/admin.conf
+    dest: ~/.kube/config
+    state: link
+
+- name: Create .kube directory for non-root user
+  file:
+    path: '{{ ansible_env.PWD }}/.kube'
+    state: directory
+    mode: '0755'
+    owner: vagrant
+    group: vagrant
+
+- name: Copy kubeconfig for non-root user
+  copy:
+    src: /etc/kubernetes/admin.conf
+    dest: '{{ ansible_env.PWD }}/.kube/config'
+    mode: '0755'
+    owner: vagrant
+    group: vagrant
+    remote_src: yes
+
+- name: Setup networking
+  include_tasks: ../networking/networking.yaml
+
+- name: Allow pods on master node
+  command: kubectl taint nodes --all node-role.kubernetes.io/master- 
+  register: untaint_master_node
+  changed_when: "'untainted' in untaint_master_node.stdout"
+  when: 
+  - not kubernetes_init_stat.stat.exists
+  - "{{ allow_deploy_on_master | bool }}"

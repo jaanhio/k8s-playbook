@@ -1,0 +1,9 @@
+---
+allow_deploy_on_master: no
+
+# k8s network plugin. currently supports: weave
+network_plugin: "weave"
+
+pod_network_cidr: '10.244.0.0/16'
+
+extra_packages: []

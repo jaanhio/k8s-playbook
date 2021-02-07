@@ -1,0 +1,16 @@
+---
+- name: Register networking solution
+  set_fact:
+    networking_solution: "{{ network_plugin | default('weave') }}" 
+
+- name: Print registered network solution
+  debug:
+    msg: "{{ networking_solution }}"
+
+- name: Install weave
+  include_tasks: ./setup-weave.yaml
+  when: networking_solution == 'weave'
+
+- name: Install flannel
+  include_tasks: ./setup-flannel.yaml
+  when: networking_solution == 'flannel'
