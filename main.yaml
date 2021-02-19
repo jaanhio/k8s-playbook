@@ -1,5 +1,5 @@
 ---
-- hosts: pik8s
+- hosts: servers
   become: true
   vars_files:
     - ./vars/user_vars.yaml
@@ -14,6 +14,9 @@
 
   - name: Install kubernetes
     include_tasks: ./kubernetes/kubernetes.yaml
+  
+  - name: Install Helm
+    include_tasks: ./helm/helm.yaml
 
   handlers:
   - name: Restart kubelet

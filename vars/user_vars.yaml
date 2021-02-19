@@ -6,4 +6,9 @@ network_plugin: "weave"
 
 pod_network_cidr: '10.244.0.0/16'
 
-extra_packages: []
+extra_packages:
+  - lsof
+  - htop
+  - sat-xmpp-core
+  - sysstat
+  - perf-tools-unstable
