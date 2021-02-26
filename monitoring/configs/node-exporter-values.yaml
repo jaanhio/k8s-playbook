@@ -1,0 +1,6 @@
+extraArgs:
+  collector.buddyinfo:
+  collector.interrupts:
+  collector.logind:
+  collector.network_route:
+  collector.processes:

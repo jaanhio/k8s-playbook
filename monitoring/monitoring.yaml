@@ -1,0 +1,14 @@
+---
+- name: Ensure bitnami helm repo is added
+  community.kubernetes.helm_repository:
+    name: bitnami
+    repo_url: "https://charts.bitnami.com/bitnami"
+
+- name: Ensure stable helm repo is added
+  community.kubernetes.helm_repository:
+    name: stable
+    binary_path: /usr/sbin/helm
+    repo_url: "https://charts.helm.sh/stable"
+
+# - name: Install node-exporter
+  
