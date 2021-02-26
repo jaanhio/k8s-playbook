@@ -18,6 +18,9 @@
   - name: Install Helm
     include_tasks: ./helm/helm.yaml
 
+  - name: Setup monitoring
+    include_tasks: ./monitoring/monitoring.yaml
+
   handlers:
   - name: Restart kubelet
     debug:
