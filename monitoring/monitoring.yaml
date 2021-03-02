@@ -1,14 +1,54 @@
 ---
-- name: Ensure bitnami helm repo is added
+- name: Ensure prometheus-community helm repo is added
   community.kubernetes.helm_repository:
-    name: bitnami
-    repo_url: "https://charts.bitnami.com/bitnami"
+    name: prometheus-community
+    repo_url: https://prometheus-community.github.io/helm-charts
 
-- name: Ensure stable helm repo is added
+- name: Ensure kube-state-metrics helm repo is added
   community.kubernetes.helm_repository:
-    name: stable
-    binary_path: /usr/sbin/helm
-    repo_url: "https://charts.helm.sh/stable"
+    name: kube-state-metrics
+    repo_url: https://kubernetes.github.io/kube-state-metrics
 
-# - name: Install node-exporter
+- name: Ensure ingress-nginx helm repo is added
+  community.kubernetes.helm_repository:
+    name: ingress-nginx
+    repo_url: https://kubernetes.github.io/ingress-nginx
+
+- name: Install kube-state-metrics helm charts
+  community.kubernetes.helm:
+    name: kube-prom
+    chart_ref: prometheus-community/kube-prometheus-stack
+    release_namespace: monitoring
+    create_namespace: true
+
+- name: Create ingress-nginx controller helm folder
+  file:
+    path: /opt/helm/ingress-nginx
+    state: directory
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Copy ingress-nginx controller values file to target machine
+  copy:
+    src: ./monitoring/configs/ingress-nginx-controller-values.yaml
+    dest: /opt/helm/ingress-nginx/ingress-nginx-controller-values.yaml
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Install ingress-nginx controller
+  community.kubernetes.helm:
+    name: ingress-nginx
+    chart_ref: ingress-nginx/ingress-nginx
+    release_namespace: monitoring
+    create_namespace: true
+    values_files:
+    - /opt/helm/ingress-nginx/ingress-nginx-controller-values.yaml
+  
+- name: Create ingress for monitoring services
+  community.kubernetes.k8s:
+    state: present
+    src: ./configs/monitoring-ingress.yaml
+  
   
