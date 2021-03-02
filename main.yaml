@@ -5,9 +5,8 @@
     - ./vars/user_vars.yaml
   
   tasks:
-  - name: Install extra packages
-    include_tasks: extra-packages.yaml
-    when: extra_packages | default([]) | length > 0
+  - name: Misc setup
+    include_tasks: ./init-setup/init-setup.yaml
 
   - name: Install docker
     include_tasks: docker.yaml
@@ -20,6 +19,7 @@
 
   - name: Setup monitoring
     include_tasks: ./monitoring/monitoring.yaml
+    when: kubernetes_role == 'master'
 
   handlers:
   - name: Restart kubelet
