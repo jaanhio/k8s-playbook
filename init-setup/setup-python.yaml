@@ -20,6 +20,10 @@
   register: pip_status
   ignore_errors: yes
 
+- name: Debug pip installation
+  debug:
+    msg: "{{ pip_status }}"
+
 - name: Download file for installing pip
   get_url:
     url: https://bootstrap.pypa.io/get-pip.py
@@ -38,5 +42,20 @@
     name:
     - kubernetes
     - openshift
+    extra_args: --ignore-installed
+
+# - name: Remove symlink to python2.7
+#   file:
+#     path: /usr/bin/python
+#     state: absent
+
+- name: Symlink /usr/bin/python to python3.9
+  file:
+    src: /usr/bin/python3.9
+    dest: /usr/bin/python3
+    owner: root
+    group: root
+    state: link
+
 
 
