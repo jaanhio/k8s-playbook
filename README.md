@@ -76,3 +76,14 @@ Install `kubernetes` and `openshift`.
 ```
 /usr/bin/python3.9 -m pip install kubernetes openshift
 ```
+
+### Additional changes required for setting up k8s on raspberry pi
+Recent k8s setup on raspberry pi has been failing due to health check failure during the `kubeadm init` constrol plane bootup phase. 
+```
+[wait-control-plane] Waiting for the kubelet to boot up the control plane as static Pods from directory "/etc/kubernetes/manifests". This can take up to 4m0s
+I0311 15:10:40.823983   29341 round_trippers.go:425] curl -k -v -XGET  -H "Accept: application/json, */*" -H "User-Agent: kubeadm/v1.20.4 (linux/arm) kubernetes/e87da0b" 'https://192.168.1.221:6443/healthz?timeout=10s'
+I0311 15:10:40.824625   29341 round_trippers.go:445] GET https://192.168.1.221:6443/healthz?timeout=10s  in 0 milliseconds
+I0311 15:10:40.824699   29341 round_trippers.go:451] Response Headers:
+```
+
+It is likely due to lack of support for `cgroups` out of the box. Refer to this articles for possible solution https://opensource.com/article/20/6/kubernetes-raspberry-pi
