@@ -44,11 +44,6 @@
     - openshift
     extra_args: --ignore-installed
 
-# - name: Remove symlink to python2.7
-#   file:
-#     path: /usr/bin/python
-#     state: absent
-
 - name: Symlink /usr/bin/python to python3.9
   file:
     src: /usr/bin/python3.9
@@ -57,5 +52,9 @@
     group: root
     state: link
 
+- name: Install python-apt package
+  apt:
+    name: python3-apt
+    state: present
 
 
