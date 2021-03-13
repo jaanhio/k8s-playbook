@@ -11,6 +11,7 @@
   loop: "{{ extra_packages }}"
   when: extra_packages | default([]) | length > 0
 
-- name: Setup python3.9
-  include_tasks: ./setup-python.yaml
+# commenting this out because it was previously required to upgrade python in order to execute kubernetes modules
+# - name: Setup python3.9
+#   include_tasks: ./setup-python.yaml
   

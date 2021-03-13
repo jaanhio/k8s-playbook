@@ -52,5 +52,9 @@
     group: root
     state: link
 
+- name: Install python-apt package
+  apt:
+    name: python3-apt
+    state: present
 
 

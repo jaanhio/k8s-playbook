@@ -28,8 +28,9 @@
 - name: Add google cloud GPG key
   apt_key:
     url: "https://packages.cloud.google.com/apt/doc/apt-key.gpg"
-    id: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
     state: present
+    # commenting this out because apt-key module doesnt seem to be detecting it properly
+    # id: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
 
 - name: Add kubernetes repository
   apt_repository:
@@ -62,18 +63,12 @@
     path: /etc/kubernetes/admin.conf
   register: kubernetes_init_stat
 
-- name: Check if server is provisioned using vagrant
-  stat:
-    path: /home/vagrant
-  register: vagrant_prov_stat
-
 # Explanation for this here https://jaanhio.medium.com/how-to-fix-k8s-clusters-network-issue-due-to-nodes-having-similar-internal-ip-address-537b48d47d3
 - name: Add KUBELET_EXTRA_ARGS
   copy:
     dest: "/etc/default/kubelet"
     content: |
       KUBELET_EXTRA_ARGS="--node-ip={{ inventory_hostname }}"
-  when: vagrant_prov_stat.stat.exists
 
 - name: Setup master node
   include_tasks: ./setup-master.yaml

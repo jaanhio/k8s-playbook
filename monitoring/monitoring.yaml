@@ -62,6 +62,7 @@
     group: root
     mode: '0644'
 
+#TODO: this task may timeout depending. might want to consider using async to extend timeout duration
 - name: Create ingress for monitoring services
   shell: kubectl apply -f /opt/k8s/monitoring-ingress.yaml
   register: monitoring_ingress_result
