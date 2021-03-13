@@ -1,5 +1,5 @@
 ---
-- hosts: kubemaster1
+- hosts: vms
   become: true
   vars_files:
     - ./vars/user_vars.yaml

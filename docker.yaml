@@ -53,8 +53,26 @@
     - docker-ce-cli
     - containerd.io
 
+- name: Copy docker daemon.json for specifying systemd as cgroup driver
+  copy:
+    dest: /etc/docker/daemon.json
+    content: |
+      {
+        "exec-opts": ["native.cgroupdriver=systemd"],
+        "log-driver": "json-file",
+        "log-opts": {
+          "max-size": "100m"
+        },
+        "storage-driver": "overlay2"
+      }
+
 - name: Add docker user
   user:
     name: vagrant
     groups: docker
     append: yes
+
+- name: Restart docker
+  service:
+    name: docker
+    state: restarted
