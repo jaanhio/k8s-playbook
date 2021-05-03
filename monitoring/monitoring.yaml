@@ -46,7 +46,7 @@
     values_files:
     - /opt/helm/ingress-nginx/ingress-nginx-controller-values.yaml
   
-- name: Create k8s definition files folder
+- name: Create k8s monitoring definition files folder
   file:
     path: /opt/k8s/monitoring
     state: directory
