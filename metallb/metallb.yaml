@@ -25,6 +25,11 @@
   register: metallb_objects_result
   changed_when: '"created" in metallb_objects_result.stdout'
 
+- name: Create metallb generic secrets
+  shell: kubectl create secret generic -n metallb-system memberlist --from-literal=secretkey="$(openssl rand -base64 128)"
+  register: metallb_secret_result
+  changed_when: '"created" in metallb_secret_result.stdout'
+
 - name: Set up metallb configmap
   shell: kubectl apply -f /opt/k8s/metallb/configmap.yaml
   register: metallb_configmap_result
