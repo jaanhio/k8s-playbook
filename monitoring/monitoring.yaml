@@ -46,9 +46,9 @@
     values_files:
     - /opt/helm/ingress-nginx/ingress-nginx-controller-values.yaml
   
-- name: Create k8s definition files folder
+- name: Create k8s monitoring definition files folder
   file:
-    path: /opt/k8s
+    path: /opt/k8s/monitoring
     state: directory
     owner: root
     group: root
@@ -57,14 +57,14 @@
 - name: Copy monitoring ingress definition file to target machine
   copy:
     src: ./monitoring/configs/monitoring-ingress.yaml
-    dest: /opt/k8s/monitoring-ingress.yaml
+    dest: /opt/k8s/monitoring/monitoring-ingress.yaml
     owner: root
     group: root
     mode: '0644'
 
-#TODO: this task may timeout depending. might want to consider using async to extend timeout duration
-- name: Create ingress for monitoring services
-  shell: kubectl apply -f /opt/k8s/monitoring-ingress.yaml
-  register: monitoring_ingress_result
-  changed_when: '"created" in monitoring_ingress_result.stdout'
+#TODO: this task may timeout depending. might want to consider using async to extend timeout duration. disabling this temporarily
+# - name: Create ingress for monitoring services
+#   shell: kubectl apply -f /opt/k8s/monitoring-ingress.yaml
+#   register: monitoring_ingress_result
+#   changed_when: '"created" in monitoring_ingress_result.stdout'
   

@@ -17,6 +17,10 @@
   - name: Install Helm
     include_tasks: ./helm/helm.yaml
 
+  - name: Setup metallb
+    include_tasks: ./metallb/metallb.yaml
+    when: kubernetes_role == 'master'
+
   - name: Setup monitoring
     include_tasks: ./monitoring/monitoring.yaml
     when: kubernetes_role == 'master'
