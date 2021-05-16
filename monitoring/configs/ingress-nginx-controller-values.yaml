@@ -1,3 +1,4 @@
-controller:
-  service:
-    type: NodePort
+# this was used previously before metallb was configured. no longer needed since metallb works well with type:LoadBalancer
+# controller:
+#   service:
+#     type: NodePort
