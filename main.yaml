@@ -3,29 +3,29 @@
   become: true
   vars_files:
     - ./vars/user_vars.yaml
-  
+
   tasks:
-  - name: Misc setup
-    include_tasks: ./init-setup/init-setup.yaml
+    - name: Init
+      include_tasks: ./init-setup/init-setup.yaml
 
-  - name: Install docker
-    include_tasks: docker.yaml
+    - name: Install docker
+      include_tasks: docker.yaml
 
-  - name: Install kubernetes
-    include_tasks: ./kubernetes/kubernetes.yaml
-  
-  - name: Install Helm
-    include_tasks: ./helm/helm.yaml
+    - name: Install kubernetes
+      include_tasks: ./kubernetes/kubernetes.yaml
 
-  - name: Setup metallb
-    include_tasks: ./metallb/metallb.yaml
-    when: kubernetes_role == 'master'
+    - name: Install Helm
+      include_tasks: ./helm/helm.yaml
 
-  - name: Setup monitoring
-    include_tasks: ./monitoring/monitoring.yaml
-    when: kubernetes_role == 'master'
+    - name: Setup metallb
+      include_tasks: ./metallb/metallb.yaml
+      when: kubernetes_role == 'master'
+
+    - name: Setup monitoring
+      include_tasks: ./monitoring/monitoring.yaml
+      when: kubernetes_role == 'master'
 
   handlers:
-  - name: Restart kubelet
-    debug:
-      msg: 'Restarting kubelet'
+    - name: Restart kubelet
+      debug:
+        msg: "Restarting kubelet"

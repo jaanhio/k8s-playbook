@@ -2,7 +2,7 @@
 
 This is an Ansible playbook for setting up k8s using `kubeadm` on Ubuntu & Debian servers.
 
-Please make sure you have Ansible installed.
+Please make sure you have Ansible installed (see https://github.com/jaanhio/mac-development-setup for Ansible installation guide).
 
 ---
 
@@ -63,7 +63,7 @@ apt-get install -y python3.9
 
 Install `distutils`.
 ```
-apt-get install python3.9-distutils 
+apt-get install python3.9-distutils
 ```
 
 Install `pip`.
@@ -78,7 +78,7 @@ Install `kubernetes` and `openshift`.
 ```
 
 ### Additional changes required for setting up k8s on raspberry pi
-Recent k8s setup on raspberry pi has been failing due to health check failure during the `kubeadm init` constrol plane bootup phase. 
+Recent k8s setup on raspberry pi has been failing due to health check failure during the `kubeadm init` constrol plane bootup phase.
 ```
 [wait-control-plane] Waiting for the kubelet to boot up the control plane as static Pods from directory "/etc/kubernetes/manifests". This can take up to 4m0s
 I0311 15:10:40.823983   29341 round_trippers.go:425] curl -k -v -XGET  -H "Accept: application/json, */*" -H "User-Agent: kubeadm/v1.20.4 (linux/arm) kubernetes/e87da0b" 'https://192.168.1.221:6443/healthz?timeout=10s'
@@ -88,7 +88,7 @@ I0311 15:10:40.824699   29341 round_trippers.go:451] Response Headers:
 
 It is due to lack of support for `cgroups` out of the box. Solution here https://opensource.com/article/20/6/kubernetes-raspberry-pi.
 
-Also, due to setting up of static ip via `dhcp`, network interface will contain 2 ip address. 
+Also, due to setting up of static ip via `dhcp`, network interface will contain 2 ip address.
 ```
 2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP group default qlen 1000
     link/ether dc:a6:32:7b:4c:75 brd ff:ff:ff:ff:ff:ff
